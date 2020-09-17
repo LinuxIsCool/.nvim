@@ -37,13 +37,17 @@ call plug#begin('~/.local/share/nvim/plugged')
 "  Plugins are in ascending chronological order relative to when they were
 "  added to the configuration. 
 "
+"
+"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                      
+"
 "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                      
 "
 " FZF Fuzzy Finder! Careful, things are about to get FAAAAASSSTTT
 "
 " A command line fuzzy finder Very powerful
-" 
 Plug 'junegunn/fzf', { 'dir': '~/Software/fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'airblade/vim-rooter'
 " 
 "
 " This command tells fzf to skip filenames during its :Rg search command.
@@ -149,9 +153,19 @@ nmap <leader>rn <Plug>(coc-rename)
 
 Plug 'neoclide/coc-eslint'
 Plug 'neoclide/coc-prettier'
-" Goyo for distraction free editing!
-" And T-shirts!
+
+" Automatically generate ctags for files
+Plug 'xolox/vim-easytags'
+
+" Language Server Protocol
+" View and search Language Server Protocol symbols and tags
+Plug 'liuchengxu/vista.vim'
+
+" Goyo for distraction free editing! And T-shirts!
 Plug 'junegunn/goyo.vim'
+
+" Limelight for focused editing
+Plug 'junegunn/limelight.vim'
 
 " Make sure you use single quotes
 "
@@ -172,11 +186,29 @@ Plug 'arcticicestudio/nord-vim'
 Plug 'jceb/vim-orgmode'
 Plug 'tpope/vim-speeddating'
 Plug 'junegunn/vim-easy-align'
+
+"-------------------------------------------------------------------------------
+" Git Section
+"
+" Github dashboard in vim!
+Plug 'junegunn/vim-github-dashboard'
+
+" Git commands in vim
 Plug 'tpope/vim-fugitive'
+
+" A git commit browser.
+Plug 'junegunn/gv.vim'
+
+" Show git diff in the sign column
+Plug 'airblade/vim-gitgutter'
+"-------------------------------------------------------------------------------
+
+
 Plug 'tpope/vim-rhubarb'
 
 "---------------
 " For Javascript and Typescript
+" INVESTIGATE THESE
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
@@ -196,13 +228,13 @@ nmap ga <Plug>(EasyAlign)
 " airline.
 " Plug 'itchyny/lightline.vim'
 
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
 "Enable tabline extension
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#left_sep = '|'
-let g:airline#extensions#tabline#left_alt_sep = '|'
-let g:airline#extensions#tabline#formatter = 'unique_tail'
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#left_sep = '|'
+" let g:airline#extensions#tabline#left_alt_sep = '|'
+" let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 "-------------------------------------------------------------------------------
 " Markdown Composer
@@ -314,7 +346,7 @@ Plug 'lotabout/slimux'
 "Send text between tmux panes!
 nmap <Leader>s  :SlimuxREPLSendLine<CR>j
 vmap <Leader>s :SlimuxREPLSendSelection<CR>
-map  <C-c><C-c> :SlimuxREPLConfigure<CR>
+" map  <C-c><C-c> :SlimuxREPLConfigure<CR>
 let g:slimux_pane_format = "#W #P "
 
 "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------                                                                                                      
@@ -347,6 +379,23 @@ set number
 " using only 1 column (and 1 space) while possible
 set numberwidth=1 
 
+" Set vim system timeouts
+set timeoutlen=1000
+set ttimeoutlen=5
+
+" Vim Arithmetic
+" <C-c> -> increase the count of a number
+" <C-x> -> decrease the count of a number
+nnoremap <C-c> :exe "normal \<C-a>"<CR>
+
+" Vim date key
+" I would like this to put behind the cursor.
+nnoremap <leader>d :r !date<CR>
+
+" Vim ls key
+" Wed 16 Sep 2020 09:32:44 PM PDT
+nnoremap <leader>l :r ! ls<CR>
+
 " Here we map the leader key! This is where things get spicy! The leader key
 " in vim is extremely powerful. Wielded by great mages, it unlocks the ability
 " to cast spells through one's very own fingertips by merely thinking a string
@@ -363,17 +412,25 @@ let g:mapleader=","
 " I was about to make something bad ass here. It escapes me. It was something
 " about doing something in vim.
 
-" I use this functionallity as close tab
-" * For some reason, leader q and leader w are slow.
-nmap <leader>x :bd<cr>
-
-" Here I make shortcuts to various system locations.
+" Here I make <b>shortcuts</b> to various system locations.
 " ssh config, fish config, vim config, my personal notes,
-nnoremap <leader>es :e ~/.ssh/config<CR>  
+nnoremap <leader>ev :e $MYVIMRC<CR>  
+nnoremap <leader>ec :e ~/.config/<CR>  
 nnoremap <leader>ef :e ~/.config/fish/config.fish<CR>  
+nnoremap <leader>ea :e ~/.config/alacritty/alacritty.yml<CR>  
+nnoremap <leader>es :e ~/.ssh/config<CR>  
+nnoremap <leader>et :e ~/.tmux.conf<CR>  
 nnoremap <leader>el :e ~/.log/log.org<CR>  
 nnoremap <leader>en :e ~/Notes/<CR>  
-nnoremap <leader>ev :e $MYVIMRC<CR>  
+
+funct! Exec(command)
+    redir =>output
+    silent exec a:command
+    redir END
+    return output
+endfunct!
+
+nnoremap <leader><leader> i^R=Exec('ls')
 
 " Force reload vimrc
 nnoremap <leader>rv :source $MYVIMRC<CR>     
@@ -425,8 +482,8 @@ set nowrap
 "Abbreviations
 ab h1 hi
 
-" Disable annoying mappings
-" Hmm.. Better look into this. I should at least know the consequences.
+" Disable these mappings that I don't want.
+" Hmm.. Better look into this. I should know what these do.
 noremap  <silent> <C-c>  <Nop>
 noremap  <silent> <C-w>f <Nop>
 noremap  <silent> <Del>  <Nop>
